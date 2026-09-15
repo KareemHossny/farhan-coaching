@@ -1,0 +1,24 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, UserPlus } from "lucide-react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { CoachHeader } from "@/components/coach/CoachHeader";
+import { CreateClientForm } from "@/components/auth/CreateClientForm";
+import { ClientActions } from "@/components/coach/ClientActions";
+
+type SearchParams = Promise<{ leadId?: string; leadName?: string; leadPhone?: string; status?: string }>;
+
+export default async function CoachClientsPage({ searchParams }: { searchParams: SearchParams }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await supabase.from("profiles").select("role, full_name").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "coach") redirect("/dashboard");
+  const params = await searchParams;
+  let query = supabase.from("clients").select("id, status, progress_enabled, profiles!clients_id_fkey(full_name, phone, avatar_url), progress_logs(date)").eq("coach_id", user.id).order("status");
+  if (params.status === "active") query = query.eq("status", "active");
+  const { data: clients, error } = await query;
+
+  return <main className="min-h-screen bg-[var(--bg-ink)] px-4 py-8 text-[var(--text-primary)] sm:px-8"><div className="mx-auto max-w-6xl"><CoachHeader name={profile?.full_name} /><header className="flex flex-col justify-between gap-4 border-b border-[var(--border-hairline)] pb-8 sm:flex-row sm:items-end"><div><p className="eyebrow">إدارة العملاء</p><h2 className="mt-3 text-3xl font-black">العملاء</h2><p className="mt-2 text-[var(--text-muted)]">افتح أي ملف لمراجعة التقدم وبناء الخطط.</p></div><a href="#new-client" className="cta-button w-fit px-4 py-3"><UserPlus size={17} /> إضافة عميل</a></header>{error && <p className="mt-6 border border-red-900 bg-red-950/30 p-4 text-sm text-red-300">تعذر تحميل العملاء. حاول تحديث الصفحة.</p>}<section className="mt-8 overflow-hidden border border-[var(--border-hairline)] bg-[var(--surface)]">{clients?.length ? <div className="divide-y divide-[var(--border-hairline)]">{clients.map((client) => { const clientProfile = Array.isArray(client.profiles) ? client.profiles[0] : client.profiles; const logs = Array.isArray(client.progress_logs) ? client.progress_logs : []; const lastDate = logs.map((log) => log.date).sort().at(-1); return <div key={client.id} className="flex flex-col gap-4 p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--bg-ink)] text-lg font-black text-[var(--accent)]">{clientProfile?.avatar_url ? <Image src={clientProfile.avatar_url} alt={`صورة ${clientProfile.full_name ?? "العميل"}`} width={48} height={48} className="h-full w-full object-cover" /> : clientProfile?.full_name?.charAt(0) ?? "؟"}</div><div><p className="font-extrabold">{clientProfile?.full_name ?? "عميل بدون اسم"}</p><p className="mt-1 text-sm text-[var(--text-muted)]" dir="ltr">{clientProfile?.phone ?? "لا يوجد رقم هاتف"}</p></div></div><div className="flex flex-wrap items-center gap-4 text-sm"><span className={`rounded-full px-3 py-1 font-bold ${client.status === "active" ? "bg-[rgb(226,253,75,0.13)] text-[var(--accent)]" : client.status === "paused" ? "bg-white/10 text-[var(--text-muted)]" : "border border-[var(--border-hairline)] text-[var(--text-secondary)]"}`}>{client.status === "active" ? "نشط" : client.status === "paused" ? "متوقف" : "قيد التجهيز"}</span><span className={`rounded-full px-3 py-1 text-xs font-bold ${client.progress_enabled ? "bg-white/5 text-[var(--text-muted)]" : "bg-amber-500/10 text-amber-200"}`}>{client.progress_enabled ? "التقدم مفتوح" : "التقدم موقوف"}</span><span className="text-[var(--text-muted)]">آخر متابعة: {lastDate ? new Date(`${lastDate}T00:00:00`).toLocaleDateString("ar-EG") : "لا توجد"}</span><Link href={`/coach/clients/${client.id}`} className="inline-flex items-center gap-1 font-bold text-[var(--accent)]">فتح <ArrowLeft size={15} /></Link></div></div><ClientActions clientId={client.id} status={client.status} progressEnabled={client.progress_enabled} /></div>; })}</div> : <div className="p-12 text-center text-[var(--text-muted)]">لا يوجد عملاء في هذا القسم حتى الآن.</div>}</section><section id="new-client" className="panel mt-10 max-w-xl p-6 sm:p-8"><p className="eyebrow">إضافة إلى المتابعة</p><h3 className="mt-2 text-2xl font-black">إضافة عميل جديد</h3>{params.leadName && <p className="mt-2 text-sm text-[var(--accent)]">تحويل الطلب: {params.leadName}</p>}<CreateClientForm defaultValues={{ fullName: params.leadName, phone: params.leadPhone, leadId: params.leadId }} /></section></div></main>;
+}

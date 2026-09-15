@@ -1,0 +1,8 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { LoginForm } from "@/components/auth/LoginForm";
+
+export default function LoginPage() {
+  return <main className="relative flex min-h-screen items-center overflow-hidden bg-[var(--bg-ink)] px-3 py-6 text-[var(--text-primary)] sm:px-4 sm:py-12"><div className="absolute inset-0 opacity-[.08]" style={{ backgroundImage: "url('/images/coach/coach-hero.jpg')", backgroundPosition: "center", backgroundSize: "cover" }} /><div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(226,253,75,.12),transparent_35%)]" /><div className="relative mx-auto grid w-full max-w-5xl overflow-hidden border border-[var(--border-hairline)] bg-[var(--surface)] lg:grid-cols-[.85fr_1fr]"><div className="hidden min-h-[560px] flex-col justify-end bg-black/30 p-10 lg:flex"><span className="eyebrow">مساحتك الخاصة</span><h2 className="mt-5 text-4xl font-black leading-tight">خطتك. تقدمك.<br />نسختك الأقوى.</h2><p className="mt-5 max-w-sm leading-7 text-[var(--text-muted)]">تابع تمارينك وتغذيتك وسجل تقدمك من مكان واحد.</p></div><div className="p-5 sm:p-10"><Link href="/" className="mb-8 inline-flex min-h-11 items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--accent)] sm:mb-12"><ArrowRight size={16} /> العودة للموقع</Link><div className="mb-7 sm:mb-8"><Image src="/images/logo.png" alt="شعار كابتن فرحان" width={150} height={52} className="h-12 w-auto object-contain" /><h1 className="mt-6 text-3xl font-black sm:mt-8">تسجيل الدخول</h1><p className="mt-2 text-[var(--text-muted)]">سجّل دخولك لمتابعة خطتك وتقدمك.</p></div><LoginForm /></div></div></main>;
+}

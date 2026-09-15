@@ -1,0 +1,17 @@
+node_modules/
+node_modules.broken/
+node_modules.invalid/
+.next/
+out/
+.vercel/
+.env*
+!.env.example
+npm-debug.log*
+package-lock.broken
+package-lock.invalid
+*.tsbuildinfo
+
+# local OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,7 @@
+node_modules
+node_modules.broken
+node_modules.invalid
+.next
+out
+coverage
+next-env.d.ts
