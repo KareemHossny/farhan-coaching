@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Autoplay, Navigation } from "swiper/modules";
+import { useEffect, useRef, useState } from "react";
+import type { Swiper as SwiperInstance } from "swiper";
+import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -12,7 +13,24 @@ type Item = { src: string; alt: string; story?: string };
 
 export function TransformationsGallery({ items }: { items: readonly Item[] }) {
   const [selected, setSelected] = useState<Item | null>(null);
+  const swiperRef = useRef<SwiperInstance | null>(null);
   const repeatedItems = Array.from({ length: 3 }, () => items).flat();
+
+  const stopAndSelect = (item: Item) => {
+    swiperRef.current?.autoplay.stop();
+    setSelected(item);
+  };
+
+  const stopAndNavigate = (direction: "next" | "prev") => {
+    const swiper = swiperRef.current;
+    if (!swiper) return;
+    swiper.autoplay.stop();
+    if (direction === "next") {
+      swiper.slideNext();
+      return;
+    }
+    swiper.slidePrev();
+  };
 
   useEffect(() => {
     if (!selected) return;
@@ -31,9 +49,9 @@ export function TransformationsGallery({ items }: { items: readonly Item[] }) {
     <>
       <div className="transformations-carousel relative mt-10 px-8 sm:px-12">
         <Swiper
-          modules={[Autoplay, Navigation]}
-          navigation={{ nextEl: ".transformations-next", prevEl: ".transformations-prev" }}
-          autoplay={{ delay: 2600, disableOnInteraction: false, pauseOnMouseEnter: false, stopOnLastSlide: false, waitForTransition: true }}
+          modules={[Autoplay]}
+          onSwiper={(swiper) => { swiperRef.current = swiper; }}
+          autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: false, stopOnLastSlide: false, waitForTransition: true }}
           speed={750}
           centeredSlides
           loop
@@ -49,7 +67,7 @@ export function TransformationsGallery({ items }: { items: readonly Item[] }) {
         >
           {repeatedItems.map((item, index) => (
             <SwiperSlide key={`${item.src}-${index}`} className="transformation-slide">
-              <button type="button" className="transformation-card group" onClick={() => setSelected(item)} aria-label={`عرض قصة ${item.alt}`}>
+              <button type="button" className="transformation-card group" onClick={() => stopAndSelect(item)} aria-label={`عرض قصة ${item.alt}`}>
                 <div className="transformation-slide-media">
                   <Image src={item.src} alt={item.alt} fill priority={index === 0} loading={index === 0 ? undefined : "lazy"} sizes="(max-width: 639px) 88vw, (max-width: 1023px) 48vw, 31vw" className="object-contain" />
                   <span className="absolute inset-x-3 bottom-3 rounded-sm bg-black/70 px-3 py-2 text-right text-xs font-bold text-white">اضغط لعرض القصة</span>
@@ -59,8 +77,8 @@ export function TransformationsGallery({ items }: { items: readonly Item[] }) {
           ))}
         </Swiper>
 
-        <button type="button" className="transformations-prev carousel-arrow right-0" aria-label="النتيجة السابقة"><ChevronRight size={22} /></button>
-        <button type="button" className="transformations-next carousel-arrow left-0" aria-label="النتيجة التالية"><ChevronLeft size={22} /></button>
+        <button type="button" className="transformations-prev carousel-arrow right-0" onClick={() => stopAndNavigate("prev")} aria-label="النتيجة السابقة"><ChevronRight size={22} /></button>
+        <button type="button" className="transformations-next carousel-arrow left-0" onClick={() => stopAndNavigate("next")} aria-label="النتيجة التالية"><ChevronLeft size={22} /></button>
       </div>
 
       {selected && (
