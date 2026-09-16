@@ -28,7 +28,19 @@ export async function logProgress(_previous: ProgressActionState, formData: Form
 
     if (!Number.isFinite(weight) || weight <= 0 || weight > 500) return { error: "أدخل وزنًا صحيحًا." };
 
-    const { data: previousLog } = await supabase.from("progress_logs").select("photo_url").eq("client_id", user.id).eq("date", date).maybeSingle();
+    const { data: previousLog, error: previousLogError } = await supabase
+      .from("progress_logs")
+      .select("photo_url")
+      .eq("client_id", user.id)
+      .eq("date", date)
+      .maybeSingle();
+    if (previousLogError) {
+      console.error("logProgress previous log lookup failed", {
+        code: previousLogError.code,
+        message: previousLogError.message,
+      });
+      return { error: "تعذر قراءة تسجيل اليوم. حدّث الصفحة وحاول مرة أخرى." };
+    }
     let photoUrl = previousLog?.photo_url ?? null;
 
     if (photo instanceof File && photo.size > 0) {
@@ -44,6 +56,12 @@ export async function logProgress(_previous: ProgressActionState, formData: Form
     if (error) {
       console.error("logProgress save failed", { code: error.code, message: error.message });
       if (uploadedPath) await supabase.storage.from("progress-photos").remove([uploadedPath]);
+      if (error.code === "42501") {
+        return { error: "صلاحيات حفظ التقدم غير مفعلة في Supabase. طبّق migration 0010 ثم حاول مرة أخرى." };
+      }
+      if (error.code === "42P10") {
+        return { error: "إعداد سجل التقدم غير مكتمل في Supabase. تأكد من وجود قيد client_id وdate ثم حاول مرة أخرى." };
+      }
       return { error: "تعذر حفظ التقدم. حاول مرة أخرى." };
     }
 
