@@ -45,6 +45,12 @@ export type Database = {
         Update: { id?: string; client_id?: string; date?: string; weight_kg?: number; photo_url?: string | null; note?: string | null };
         Relationships: [];
       };
+      exercise_performance_logs: {
+        Row: { id: string; client_id: string; plan_item_id: string | null; exercise_name: string; date: string; max_weight_kg: number; max_reps: number; created_at: string };
+        Insert: { id?: string; client_id: string; plan_item_id?: string | null; exercise_name: string; date?: string; max_weight_kg: number; max_reps: number; created_at?: string };
+        Update: { id?: string; client_id?: string; plan_item_id?: string | null; exercise_name?: string; date?: string; max_weight_kg?: number; max_reps?: number; created_at?: string };
+        Relationships: [];
+      };
       leads: {
         Row: { id: string; name: string; phone: string; message: string | null; created_at: string; contacted: boolean };
         Insert: { id?: string; name: string; phone: string; message?: string | null; created_at?: string; contacted?: boolean };

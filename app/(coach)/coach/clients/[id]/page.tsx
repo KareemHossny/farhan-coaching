@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProgressChart } from "@/components/coach/ProgressChart";
 import { LibraryPlanBuilder, type BuilderItem } from "@/components/coach/LibraryPlanBuilder";
 import { ProgressPhotoGallery } from "@/components/coach/ProgressPhotoGallery";
+import { ExercisePerformanceHistory } from "@/components/coach/ExercisePerformanceHistory";
 import { createProgressPhotoUrl } from "@/lib/progress-photos";
 
 type Params = Promise<{ id: string }>;
@@ -39,11 +40,12 @@ export default async function ClientPlanPage({ params }: { params: Params }) {
   const { data: client } = await supabase.from("clients").select("id, status, goal, height_cm, starting_weight_kg, profiles!clients_id_fkey(full_name, phone, avatar_url)").eq("id", id).eq("coach_id", user.id).maybeSingle();
   if (!client) notFound();
 
-  const [{ data: plans, error: plansError }, { data: progress }, { data: exercises }, { data: meals }] = await Promise.all([
+  const [{ data: plans, error: plansError }, { data: progress }, { data: exercises }, { data: meals }, { data: performance }] = await Promise.all([
     supabase.from("plans").select("id, type, title, start_date, end_date").eq("client_id", id).eq("coach_id", user.id),
     supabase.from("progress_logs").select("date, weight_kg, photo_url").eq("client_id", id).order("date", { ascending: true }),
     supabase.from("exercise_library").select("id, name, youtube_url, default_sets, default_reps, default_rest_seconds").eq("coach_id", user.id).order("name"),
     supabase.from("meal_library").select("id, name, calories, protein_g, carbs_g, fats_g, macro_reference_grams").eq("coach_id", user.id).order("name"),
+    supabase.from("exercise_performance_logs").select("exercise_name, date, max_weight_kg, max_reps").eq("client_id", id).order("date", { ascending: false }),
   ]);
   if (plansError) throw new Error("تعذر تحميل الخطط.");
 
@@ -68,6 +70,7 @@ export default async function ClientPlanPage({ params }: { params: Params }) {
       <div className="mt-6"><p className="text-sm text-lime-300">ملف العميل</p><h1 className="mt-2 text-3xl font-black">{profile?.full_name ?? "عميل بدون اسم"}</h1><p className="mt-2 text-slate-400">{client.goal ?? "لم يتم تحديد الهدف بعد"} · {client.height_cm ? `${client.height_cm} سم` : "الطول غير مسجل"}</p></div>
       <section className="mt-8 rounded-xl border border-white/10 bg-slate-900 p-4 sm:p-6"><h2 className="text-xl font-bold">تقدم الوزن</h2><p className="mt-1 text-slate-400">الوزن الابتدائي: {client.starting_weight_kg ? `${client.starting_weight_kg} كجم` : "غير مسجل"}</p><div className="mt-5"><ProgressChart data={chartData} /></div></section>
       <section className="mt-5 rounded-xl border border-white/10 bg-slate-900 p-4 sm:p-6"><div className="mb-5"><h2 className="text-xl font-bold">صور التقدم</h2><p className="mt-1 text-sm text-slate-400">الصور متاحة لك وللكابتن فقط.</p></div><ProgressPhotoGallery photos={progressPhotos} /></section>
+      <ExercisePerformanceHistory logs={(performance ?? []) as { exercise_name: string; date: string; max_weight_kg: number; max_reps: number }[]} />
       <section className="mt-10"><h2 className="text-2xl font-black">بناء الخطط</h2><p className="mt-2 text-slate-400">اختر من المكتبة أو أضف عنصرًا مخصصًا لكل يوم.</p><LibraryPlanBuilder clientId={id} exercises={exercises ?? []} meals={meals ?? []} initialWorkout={{ id: workout?.id, title: workout?.title ?? "خطة التمرين", startDate: workout?.start_date ?? "", endDate: workout?.end_date ?? "", items: workout ? toItems(itemsByPlan.get(workout.id) ?? []) : [] }} initialDiet={{ id: diet?.id, title: diet?.title ?? "خطة التغذية", startDate: diet?.start_date ?? "", endDate: diet?.end_date ?? "", items: diet ? toItems(itemsByPlan.get(diet.id) ?? []) : [] }} /></section>
     </div></main>
   );
