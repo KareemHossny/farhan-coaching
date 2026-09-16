@@ -42,6 +42,7 @@ export async function logProgress(_previous: ProgressActionState, formData: Form
 
     const { error } = await supabase.from("progress_logs").upsert({ client_id: user.id, date, weight_kg: weight, photo_url: photoUrl, note }, { onConflict: "client_id,date" });
     if (error) {
+      console.error("logProgress save failed", { code: error.code, message: error.message });
       if (uploadedPath) await supabase.storage.from("progress-photos").remove([uploadedPath]);
       return { error: "تعذر حفظ التقدم. حاول مرة أخرى." };
     }

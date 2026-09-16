@@ -873,3 +873,4 @@ At this point the project is live. Any further changes just go through the same 
 - Existing clients remain enabled by default through corrective migration `0009_client_progress_control.sql`.
 - Coaches can pause or reactivate sending weight/photos from the client list. The server action and the `progress_logs` insert RLS policy both enforce the setting; hiding the client form is not the only protection.
 - Existing authorized progress history and photos remain visible to an active client and their assigned coach while new submissions are paused.
+- An active client with progress enabled can replace their own same-day weight/photo entry; this is protected by corrective migration `0010_progress_log_client_update.sql`.
