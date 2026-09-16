@@ -1,21 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { saveExercisePerformance, type ExercisePerformanceActionState } from "@/app/actions/exercise-performance";
 import type { ClientPlanItem } from "@/components/client/PlanView";
 
-const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] as const;
-
-export type ExercisePerformanceLog = {
+export type ExercisePerformanceRecord = {
   plan_item_id: string | null;
-  date: string;
+  exercise_key: string;
   max_weight_kg: number;
   max_reps: number;
 };
 
-function PerformanceForm({ item, log }: { item: ClientPlanItem; log?: ExercisePerformanceLog }) {
+function exerciseKey(item: ClientPlanItem) {
+  return item.library_item_id ? `library:${item.library_item_id}` : `custom:${(item.item_name ?? "").trim().toLowerCase()}`;
+}
+
+function PerformanceForm({ item, log }: { item: ClientPlanItem; log?: ExercisePerformanceRecord }) {
   const [state, action, pending] = useActionState<ExercisePerformanceActionState, FormData>(saveExercisePerformance, {});
 
   useEffect(() => {
@@ -46,20 +47,16 @@ function PerformanceForm({ item, log }: { item: ClientPlanItem; log?: ExercisePe
   );
 }
 
-export function ExercisePerformanceSection({ items, logs, today }: { items: ClientPlanItem[]; logs: ExercisePerformanceLog[]; today: number }) {
-  const [selectedDay, setSelectedDay] = useState(today);
-  const dayItems = items.filter((item) => item.day_of_week === selectedDay).sort((a, b) => a.order_index - b.order_index);
-  const logByItem = new Map(logs.filter((log) => log.plan_item_id).map((log) => [log.plan_item_id, log]));
+export function ExercisePerformanceSection({ items, records }: { items: ClientPlanItem[]; records: ExercisePerformanceRecord[] }) {
+  const uniqueItems = [...new Map([...items].sort((a, b) => a.order_index - b.order_index).map((item) => [exerciseKey(item), item])).values()];
+  const recordByExercise = new Map(records.map((record) => [record.exercise_key, record]));
 
   return (
     <section className="panel mt-5 p-5 sm:p-7" aria-labelledby="exercise-performance-heading">
       <p className="eyebrow">متابعة الأداء</p>
       <h2 id="exercise-performance-heading" className="mt-2 text-2xl font-black">سجّل أقوى أداء ليك</h2>
-      <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">اكتب أقصى وزن وأعلى عدات حققتهم في كل تمرين، والكابتن هيقدر يتابع تقدمك.</p>
-      <div className="day-picker mt-5" role="tablist" aria-label="اختيار يوم التمرين">
-        {days.map((day, index) => <button key={day} type="button" role="tab" aria-selected={selectedDay === index} onClick={() => setSelectedDay(index)} className={`day-picker-button ${selectedDay === index ? "day-picker-button-active" : ""}`}>{index === today && <span className="day-picker-dot" />}{day}</button>)}
-      </div>
-      {dayItems.length ? <div className="mt-4 space-y-3">{dayItems.map((item) => <PerformanceForm key={item.item_id} item={item} log={logByItem.get(item.item_id)} />)}</div> : <p className="mt-5 rounded-[var(--radius-base)] border border-dashed border-[var(--border-hairline)] p-6 text-center text-sm text-[var(--text-muted)]">لا توجد تمارين مضافة لهذا اليوم.</p>}
+      <p className="mt-2 text-sm leading-7 text-[var(--text-muted)]">لكل تمرين سجل واحد فقط. عدّل أقصى وزن أو أعلى عدات في أي وقت، والكابتن سيرى آخر قيمة محفوظة.</p>
+      {uniqueItems.length ? <div className="mt-4 space-y-3">{uniqueItems.map((item) => <PerformanceForm key={exerciseKey(item)} item={item} log={recordByExercise.get(exerciseKey(item))} />)}</div> : <p className="mt-5 rounded-[var(--radius-base)] border border-dashed border-[var(--border-hairline)] p-6 text-center text-sm text-[var(--text-muted)]">لم يضف الكابتن تمارين إلى خطتك بعد.</p>}
     </section>
   );
 }

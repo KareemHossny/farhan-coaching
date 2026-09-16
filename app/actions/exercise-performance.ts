@@ -21,21 +21,21 @@ export async function saveExercisePerformance(
     if (!Number.isFinite(maxWeight) || maxWeight < 0 || maxWeight > 1000) return { error: "اكتب أقصى وزن صحيحًا." };
     if (!Number.isInteger(maxReps) || maxReps < 1 || maxReps > 1000) return { error: "اكتب أعلى عدد عدات صحيحًا." };
 
-    const { error } = await supabase.from("exercise_performance_logs").upsert(
+    const { error } = await supabase.from("exercise_performance_records").upsert(
       {
         client_id: user.id,
         plan_item_id: planItemId,
+        exercise_key: "",
         exercise_name: "",
-        date: new Date().toISOString().slice(0, 10),
         max_weight_kg: maxWeight,
         max_reps: maxReps,
       },
-      { onConflict: "client_id,plan_item_id,date" },
+      { onConflict: "client_id,exercise_key" },
     );
 
     if (error) {
       console.error("saveExercisePerformance failed", { code: error.code, message: error.message });
-      return { error: "تعذر حفظ أداء التمرين. تأكد من تطبيق migration 0012 ثم حاول مرة أخرى." };
+      return { error: "تعذر حفظ أداء التمرين. تأكد من تطبيق migration 0013 ثم حاول مرة أخرى." };
     }
 
     revalidatePath("/dashboard");

@@ -51,6 +51,12 @@ export type Database = {
         Update: { id?: string; client_id?: string; plan_item_id?: string | null; exercise_name?: string; date?: string; max_weight_kg?: number; max_reps?: number; created_at?: string };
         Relationships: [];
       };
+      exercise_performance_records: {
+        Row: { id: string; client_id: string; plan_item_id: string | null; exercise_key: string; exercise_name: string; max_weight_kg: number; max_reps: number; created_at: string; updated_at: string };
+        Insert: { id?: string; client_id: string; plan_item_id?: string | null; exercise_key: string; exercise_name: string; max_weight_kg: number; max_reps: number; created_at?: string; updated_at?: string };
+        Update: { id?: string; client_id?: string; plan_item_id?: string | null; exercise_key?: string; exercise_name?: string; max_weight_kg?: number; max_reps?: number; created_at?: string; updated_at?: string };
+        Relationships: [];
+      };
       leads: {
         Row: { id: string; name: string; phone: string; message: string | null; created_at: string; contacted: boolean };
         Insert: { id?: string; name: string; phone: string; message?: string | null; created_at?: string; contacted?: boolean };
