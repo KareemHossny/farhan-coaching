@@ -57,7 +57,7 @@ export async function logProgress(_previous: ProgressActionState, formData: Form
       console.error("logProgress save failed", { code: error.code, message: error.message });
       if (uploadedPath) await supabase.storage.from("progress-photos").remove([uploadedPath]);
       if (error.code === "42501") {
-        return { error: "صلاحيات حفظ التقدم غير مفعلة في Supabase. طبّق migration 0010 ثم حاول مرة أخرى." };
+        return { error: "صلاحيات حفظ التقدم غير مكتملة في Supabase. طبّق migration 0011 ثم حاول مرة أخرى." };
       }
       if (error.code === "42P10") {
         return { error: "إعداد سجل التقدم غير مكتمل في Supabase. تأكد من وجود قيد client_id وdate ثم حاول مرة أخرى." };
