@@ -1,8 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
-  return <main className="relative flex min-h-screen items-center overflow-hidden bg-[var(--bg-ink)] px-3 py-6 text-[var(--text-primary)] sm:px-4 sm:py-12"><div className="absolute inset-0 opacity-[.08]" style={{ backgroundImage: "url('/images/coach/coach-hero.jpg')", backgroundPosition: "center", backgroundSize: "cover" }} /><div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(226,253,75,.12),transparent_35%)]" /><div className="relative mx-auto grid w-full max-w-5xl overflow-hidden border border-[var(--border-hairline)] bg-[var(--surface)] lg:grid-cols-[.85fr_1fr]"><div className="hidden min-h-[560px] flex-col justify-end bg-black/30 p-10 lg:flex"><span className="eyebrow">مساحتك الخاصة</span><h2 className="mt-5 text-4xl font-black leading-tight">خطتك. تقدمك.<br />نسختك الأقوى.</h2><p className="mt-5 max-w-sm leading-7 text-[var(--text-muted)]">تابع تمارينك وتغذيتك وسجل تقدمك من مكان واحد.</p></div><div className="p-5 sm:p-10"><Link href="/" className="mb-8 inline-flex min-h-11 items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--accent)] sm:mb-12"><ArrowRight size={16} /> العودة للموقع</Link><div className="mb-7 sm:mb-8"><Image src="/images/logo.png" alt="شعار كابتن فرحان" width={150} height={52} className="h-12 w-auto object-contain" /><h1 className="mt-6 text-3xl font-black sm:mt-8">تسجيل الدخول</h1><p className="mt-2 text-[var(--text-muted)]">سجّل دخولك لمتابعة خطتك وتقدمك.</p></div><LoginForm /></div></div></main>;
+  return <main className="login-page relative flex min-h-screen items-center overflow-hidden bg-[var(--bg-ink)] px-3 py-4 text-[var(--text-primary)] sm:px-6 sm:py-10">
+    <div className="login-background" aria-hidden="true" />
+    <div className="login-orb login-orb-one" aria-hidden="true" />
+    <div className="login-orb login-orb-two" aria-hidden="true" />
+    <div className="login-shell relative mx-auto grid w-full max-w-5xl overflow-hidden">
+      <section className="login-visual" aria-label="مساحتك التدريبية">
+        <Image src="/images/coach/coach-hero.jpg" alt="كابتن أحمد فرحان" fill priority sizes="(max-width: 1023px) 100vw, 55vw" className="object-cover" />
+        <div className="login-visual-overlay" />
+        <div className="login-visual-content">
+          <span className="login-kicker"><Sparkles size={15} /> مساحتك الخاصة</span>
+          <h2>خطتك. تقدمك.<br />نسختك الأقوى.</h2>
+          <p>تابع تمرينك وتغذيتك وسجل تقدمك من مكان واحد، بخطة معمولة على مقاسك.</p>
+          <div className="login-trust"><ShieldCheck size={17} /><span>بياناتك خاصة وآمنة</span></div>
+        </div>
+      </section>
+      <section className="login-panel">
+        <Link href="/" className="login-back"><ArrowRight size={16} /> العودة للموقع</Link>
+        <div className="login-heading">
+          <Image src="/images/logo.png" alt="شعار كابتن فرحان" width={150} height={52} className="login-logo" />
+          <span className="login-panel-eyebrow">أهلاً بيك</span>
+          <h1>سجّل دخولك وابدأ خطوتك</h1>
+          <p>ادخل على خطتك وتابع تقدمك بسهولة.</p>
+        </div>
+        <LoginForm />
+      </section>
+    </div>
+  </main>;
 }
