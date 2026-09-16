@@ -12,14 +12,14 @@ export async function logProgress(_previous: ProgressActionState, formData: Form
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: "يجب تسجيل الدخول أولًا." };
 
-    const { data: clientSettings, error: settingsError } = await supabase
-      .from("clients")
-      .select("status, progress_enabled")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (settingsError || !clientSettings || clientSettings.status !== "active" || !clientSettings.progress_enabled) {
-      return { error: "تسجيل التقدم متوقف حاليًا من الكابتن." };
+    const { data: clientSettings, error: settingsError } = await supabase.rpc("get_client_account").maybeSingle();
+    if (settingsError) {
+      console.error("logProgress account settings failed", { code: settingsError.code, message: settingsError.message });
+      return { error: "تعذر التحقق من إعدادات تسجيل التقدم. تأكد من تطبيق migration 0009 في Supabase ثم حاول مرة أخرى." };
     }
+    if (!clientSettings) return { error: "لم يتم العثور على حساب العميل. سجّل الخروج ثم ادخل مرة أخرى." };
+    if (clientSettings.status !== "active") return { error: "الحساب غير نشط حاليًا. تواصل مع الكابتن." };
+    if (!clientSettings.progress_enabled) return { error: "تسجيل التقدم متوقف حاليًا من الكابتن." };
 
     const weight = Number(formData.get("weight_kg"));
     const note = String(formData.get("note") ?? "").trim().slice(0, 1000) || null;
