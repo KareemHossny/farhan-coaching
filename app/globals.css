@@ -38,6 +38,11 @@ input, select, textarea { min-height: 44px; }
   .display-title, .section-title { font-family: "Cairo", "Tajawal", sans-serif; font-weight: 900; letter-spacing: -.045em; }
   .section-title { max-width: 760px; font-size: clamp(2rem, 4vw, 4rem); line-height: 1.17; }
   .panel { border: 1px solid var(--border-hairline); background: var(--surface); border-radius: var(--radius-base); }
+  .client-sidebar-link { display: flex; min-height: 48px; align-items: center; gap: .75rem; border-right: 2px solid transparent; padding: .75rem .875rem; color: var(--text-muted); font-size: .9rem; font-weight: 800; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+  .client-sidebar-link:hover { background: rgb(255 255 255 / 4%); color: var(--text-primary); }
+  .client-sidebar-link-active { border-right-color: var(--accent); background: rgb(226 253 75 / 9%); color: var(--accent); }
+  .client-mobile-nav-link { display: inline-flex; min-height: 42px; align-items: center; gap: .45rem; border: 1px solid var(--border-hairline); padding: .55rem .75rem; color: var(--text-muted); font-size: .78rem; font-weight: 800; white-space: nowrap; }
+  .client-mobile-nav-link-active { border-color: var(--accent); background: rgb(226 253 75 / 9%); color: var(--accent); }
   .field { width: 100%; border: 1px solid var(--border-hairline); border-radius: var(--radius-base); background: var(--bg-ink); color: var(--text-primary); padding: .85rem 1rem; outline: none; transition: border-color .2s ease, box-shadow .2s ease; }
   .field::placeholder { color: #686761; }
   .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(226 253 75 / 12%); }

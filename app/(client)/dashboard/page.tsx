@@ -1,54 +1,21 @@
-import { CalendarDays, Scale, Sparkles } from "lucide-react";
-import { redirect } from "next/navigation";
-import { LogoutButton } from "@/components/auth/LogoutButton";
-import { PlanView, type ClientPlanItem } from "@/components/client/PlanView";
-import { ProgressLogForm } from "@/components/client/ProgressLogForm";
-import { ProgressPhotoGallery } from "@/components/client/ProgressPhotoGallery";
-import { ExercisePerformanceSection, type ExercisePerformanceRecord } from "@/components/client/ExercisePerformanceSection";
-import { WeightHistoryChart } from "@/components/client/WeightHistoryChart";
-import { createClient } from "@/lib/supabase/server";
-import { createProgressPhotoUrl } from "@/lib/progress-photos";
+import { Activity, ArrowLeft, Dumbbell, Scale, Trophy, Utensils } from "lucide-react";
+import Link from "next/link";
+import { getClientDashboardSession } from "@/lib/client-dashboard";
 
-type ClientPlan = { id: string; type: "workout" | "diet"; title: string; start_date: string | null; end_date: string | null; plan_items: ClientPlanItem[] };
+const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
-function groupPlanItems(items: ClientPlanItem[]): ClientPlan[] {
-  const plans = new Map<string, ClientPlan>();
-  for (const item of items) {
-    const plan = plans.get(item.plan_id) ?? { id: item.plan_id, type: item.plan_type, title: item.plan_title, start_date: item.start_date, end_date: item.end_date, plan_items: [] };
-    plan.plan_items.push(item);
-    plans.set(item.plan_id, plan);
-  }
-  return [...plans.values()];
-}
+const destinationCards = [
+  { href: "/dashboard/exercises", title: "تمارينك", description: "شاهد تمرين اليوم وفيديوهات التنفيذ.", icon: Dumbbell },
+  { href: "/dashboard/meals", title: "وجباتك", description: "خطة غذائية منظمة بالجرامات فقط.", icon: Utensils },
+  { href: "/dashboard/strength", title: "الأوزان والعدات", description: "حدّث أقصى أداء حققته في كل تمرين.", icon: Trophy },
+  { href: "/dashboard/progress", title: "تقدمك", description: "سجل وزنك وصورك وتابع رحلتك.", icon: Activity },
+] as const;
 
 export default async function ClientDashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const [{ data: account }, { data: progress }] = await Promise.all([
-    supabase.rpc("get_client_account").maybeSingle(),
-    supabase.from("progress_logs").select("date, weight_kg, note, photo_url").eq("client_id", user.id).order("date", { ascending: true }),
-  ]);
-  if (!account) redirect("/login");
-
-  if (account.status !== "active") return <main className="min-h-screen bg-[var(--bg-ink)] px-4 py-6 text-[var(--text-primary)] sm:px-6 sm:py-8"><div className="mx-auto max-w-2xl"><ClientHeader name={account.full_name} /><section className="client-status-card panel mt-8 p-6 sm:p-9" aria-live="polite"><div className="flex h-14 w-14 items-center justify-center rounded-full bg-[rgb(226,253,75,0.1)] text-[var(--accent)]"><Sparkles size={24} /></div><p className="eyebrow mt-7">{account.status === "pending" ? "الحساب غير مفعل" : "الحساب متوقف"}</p><h2 className="mt-3 text-3xl font-black">{account.status === "pending" ? "حسابك جاهز، لكن لم يتم تفعيله بعد." : "حسابك متوقف مؤقتًا من الكابتن."}</h2><p className="mt-4 leading-8 text-[var(--text-muted)]">{account.status === "pending" ? "تواصل مع الكابتن عبر واتساب لمعرفة الخطوة التالية." : "ستظهر خطتك وتسجيل التقدم مرة أخرى بعد إعادة تفعيل الحساب."}</p></section></div></main>;
-
-  const [{ data: safeItems, error: planError }, { data: performance }] = await Promise.all([
-    supabase.rpc("get_client_plan_items"),
-    supabase.from("exercise_performance_records").select("plan_item_id, exercise_key, max_weight_kg, max_reps").eq("client_id", user.id).order("updated_at", { ascending: false }),
-  ]);
-  const plans = groupPlanItems((safeItems ?? []) as ClientPlanItem[]);
-  const workout = plans.find((plan) => plan.type === "workout");
-  const diet = plans.find((plan) => plan.type === "diet");
-  const chartData = (progress ?? []).map((log) => ({ date: log.date, weight: Number(log.weight_kg) }));
-  const latestWeight = chartData.at(-1)?.weight;
+  const { supabase, user, account } = await getClientDashboardSession();
+  const { data: progress } = await supabase.from("progress_logs").select("weight_kg").eq("client_id", user.id).order("date", { ascending: false }).limit(1);
+  const latestWeight = progress?.[0]?.weight_kg;
   const today = new Date().getDay();
-  const progressPhotos = (await Promise.all((progress ?? []).map(async (log) => ({ date: log.date, url: await createProgressPhotoUrl(supabase, log.photo_url) })))).filter((photo): photo is { date: string; url: string } => Boolean(photo.url));
 
-  return <main className="client-dashboard min-h-screen bg-[var(--bg-ink)] px-4 py-6 text-[var(--text-primary)] sm:px-6 sm:py-8"><div className="mx-auto max-w-4xl"><ClientHeader name={account.full_name} /><section className="client-welcome panel mb-5 p-5 sm:p-7"><div className="flex items-start justify-between gap-4"><div><p className="eyebrow">مساحتك التدريبية</p><h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">جاهز لخطوة النهارده؟</h2><p className="mt-3 max-w-xl leading-7 text-[var(--text-muted)]">خطتك قدامك، اختار يومك وسجل تقدمك في أقل من دقيقة.</p></div><span className="hidden h-12 w-12 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--bg-ink)] sm:flex"><Sparkles size={22} /></span></div><div className="mt-6 grid grid-cols-2 gap-2 sm:max-w-md"><div className="client-summary-tile"><CalendarDays size={17} /><span>اليوم</span><strong>{["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"][today]}</strong></div><div className="client-summary-tile"><Scale size={17} /><span>آخر وزن</span><strong>{latestWeight ? `${latestWeight} كجم` : "لم يسجل بعد"}</strong></div></div></section>{planError && <p className="mb-5 rounded-[var(--radius-base)] border border-red-900 bg-red-950/30 p-4 text-sm text-red-300" role="alert">تعذر تحميل الخطط. حاول تحديث الصفحة.</p>}<PlanView workout={workout} diet={diet} today={today} />{workout && <ExercisePerformanceSection items={workout.plan_items} records={(performance ?? []) as ExercisePerformanceRecord[]} />}{account.progress_enabled ? <section className="client-progress-section panel mt-5 p-5 sm:p-7"><div><p className="eyebrow">المتابعة</p><h2 className="mt-2 text-2xl font-black">سجل تقدمك</h2><p className="mt-2 text-[var(--text-muted)]">وزنك وملاحظتك يساعدوا الكابتن يطوّر خطتك.</p></div><ProgressLogForm /></section> : <section className="client-progress-disabled panel mt-5 p-5 sm:p-7" aria-live="polite"><p className="eyebrow">المتابعة</p><h2 className="mt-2 text-2xl font-black">تسجيل التقدم متوقف حاليًا</h2><p className="mt-3 leading-7 text-[var(--text-muted)]">الكابتن أوقف إرسال الوزن والصور مؤقتًا. ستتمكن من التسجيل مرة أخرى عند تفعيل المتابعة.</p></section>}<section className="panel mt-5 p-5 sm:p-7"><div className="flex items-end justify-between gap-4"><div><p className="eyebrow">رحلتك بالأرقام</p><h2 className="mt-2 text-2xl font-black">تاريخ الوزن</h2></div>{chartData.length > 1 && <span className="text-xs text-[var(--text-muted)]">{chartData.length} تسجيلات</span>}</div><div className="mt-5"><WeightHistoryChart data={chartData} /></div></section><section className="panel mt-5 p-5 sm:p-7"><div className="mb-5"><p className="eyebrow">صور الرحلة</p><h2 className="mt-2 text-2xl font-black">تقدمك بالصور</h2><p className="mt-2 text-sm text-[var(--text-muted)]">صورك خاصة بك ولا يراها إلا أنت والكابتن.</p></div><ProgressPhotoGallery photos={progressPhotos} /></section></div></main>;
-}
-
-function ClientHeader({ name }: { name: string | null }) {
-  return <header className="mb-7 flex flex-col gap-4 border-b border-[var(--border-hairline)] pb-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="eyebrow">لوحة العميل</p><h1 className="mt-2 text-xl font-black">أهلًا {name ?? "بك"}</h1></div><LogoutButton /></header>;
+  return <div className="mx-auto max-w-5xl"><section className="client-welcome panel p-5 sm:p-7"><p className="eyebrow">مساحتك التدريبية</p><h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">جاهز لخطوة النهارده؟</h2><p className="mt-3 max-w-2xl leading-7 text-[var(--text-muted)]">اختار القسم الذي تحتاجه الآن، وكل بيانات تمرينك ومتابعتك مرتبة في مكانها.</p><div className="mt-6 grid grid-cols-2 gap-2 sm:max-w-md"><div className="client-summary-tile"><Activity size={17} /><span>اليوم</span><strong>{dayNames[today]}</strong></div><div className="client-summary-tile"><Scale size={17} /><span>آخر وزن</span><strong>{latestWeight ? `${latestWeight} كجم` : "لم يسجل بعد"}</strong></div></div></section><section className="mt-6"><div className="mb-4"><p className="eyebrow">اختصارات سريعة</p><h2 className="mt-2 text-2xl font-black">ماذا تريد أن تفتح؟</h2></div><div className="grid gap-3 sm:grid-cols-2">{destinationCards.map(({ href, title, description, icon: Icon }) => <Link key={href} href={href} className="group panel flex min-h-36 items-center gap-4 p-5 transition hover:border-[var(--accent)]"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[rgb(226,253,75,0.1)] text-[var(--accent)]"><Icon size={21} /></span><span className="min-w-0 flex-1"><span className="block text-lg font-black">{title}</span><span className="mt-1 block text-sm leading-6 text-[var(--text-muted)]">{description}</span></span><ArrowLeft className="shrink-0 text-[var(--accent)] transition group-hover:-translate-x-1" size={19} /></Link>)}</div></section>{!account.progress_enabled && <p className="mt-6 rounded-[var(--radius-base)] border border-amber-500/20 bg-amber-500/10 p-4 text-sm leading-7 text-amber-100">تسجيل التقدم موقوف حاليًا من الكابتن، لكن يمكنك الاطلاع على خططك وبياناتك السابقة.</p>}</div>;
 }
