@@ -125,7 +125,28 @@ input, select, textarea { min-height: 44px; }
   .quick-link svg:first-child { color: var(--accent); }
   .quick-link svg:last-child { margin-right: auto; color: var(--text-muted); }
   .quick-link:hover { color: var(--accent); }
+  .landing-reveal { --reveal-delay: 0ms; }
+  .landing-reveal-ready:not(.landing-reveal-visible) { opacity: 0; transform: translateY(22px); }
+  .landing-reveal-ready { transition: opacity .7s ease var(--reveal-delay), transform .7s cubic-bezier(.22, 1, .36, 1) var(--reveal-delay); }
+  .landing-reveal-visible { opacity: 1; transform: translateY(0); }
+  .landing-scroll-reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s cubic-bezier(.22, 1, .36, 1); }
+  .landing-scroll-visible { opacity: 1; transform: translateY(0); }
+  .hero-entrance > * { animation: landing-rise .7s cubic-bezier(.22, 1, .36, 1) both; }
+  .hero-entrance > :nth-child(1) { animation-delay: .12s; }
+  .hero-entrance > :nth-child(2) { animation-delay: .22s; }
+  .hero-entrance > :nth-child(3) { animation-delay: .32s; }
+  .hero-entrance > :nth-child(4) { animation-delay: .42s; }
+  .hero-photo { animation: hero-photo-in 1.2s ease-out both; }
+  .hero-shade { animation: hero-shade-in 1s ease-out both; }
+  .method-card, .pricing-card, .about-image, .transformation-card { transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+  .method-card:hover, .pricing-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 18px 40px rgb(0 0 0 / 18%); }
+  .about-image:hover { transform: scale(1.015); }
+  .transformation-card:hover { transform: translateY(-3px); }
 }
+
+@keyframes landing-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes hero-photo-in { from { opacity: 0; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
+@keyframes hero-shade-in { from { opacity: 0; } to { opacity: 1; } }
 
 @media (min-width: 768px) {
   .method-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -179,6 +200,9 @@ input, select, textarea { min-height: 44px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  .landing-reveal-ready:not(.landing-reveal-visible) { opacity: 1; transform: none; transition: none; }
+  .landing-scroll-reveal { opacity: 1; transform: none; transition: none; }
+  .hero-entrance > *, .hero-photo, .hero-shade { animation: none !important; }
 }
 
 /* Shared brand bridge for older dashboard utility classes. This keeps legacy

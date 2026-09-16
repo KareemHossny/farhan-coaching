@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ContactForm } from "@/components/landing/ContactForm";
 import { MobileNav } from "@/components/landing/MobileNav";
 import { TransformationsGallery } from "@/components/landing/TransformationsGallery";
+import { LandingMotion, Reveal } from "@/components/landing/Reveal";
 import { landingContent } from "@/lib/content/landing-content";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
@@ -16,6 +17,7 @@ export default function MarketingPage() {
 
   return (
     <main className="marketing-shell min-h-screen overflow-x-clip bg-[var(--bg-ink)] text-[var(--text-primary)]">
+      <LandingMotion />
       <header className="site-header"><div className="container flex h-[72px] items-center justify-between">
         <a href="#home" aria-label={coach.name} className="shrink-0"><Image src={nav.logo.url} alt={nav.logo.alt} width={150} height={52} className="h-11 w-auto object-contain" priority /></a>
         <nav className="hidden items-center gap-8 md:flex" aria-label="التنقل الرئيسي">{nav.links.map((link) => <a key={link.href} href={link.href} className="nav-link">{link.label}</a>)}</nav>
@@ -27,7 +29,7 @@ export default function MarketingPage() {
         <div className="hero-photo"><Image src={hero.heroPhotoUrl} alt={hero.heroPhotoAlt} fill priority sizes="(max-width: 767px) 100vw, 64vw" className="object-cover" /></div>
         <div className="hero-shade" />
         <div className="container relative z-10 grid min-h-[calc(100svh-72px)] items-end gap-8 pb-8 pt-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-16 lg:[direction:ltr]">
-          <div className="hero-copy max-w-3xl lg:[direction:rtl]">
+          <div className="hero-copy hero-entrance max-w-3xl lg:[direction:rtl]">
             <div className="hero-kicker"><span className="hero-kicker-dot" />{hero.eyebrow}<span className="hero-kicker-line" /></div>
             <h1 className="display-title mt-5 max-w-3xl text-[clamp(2.65rem,12vw,5rem)] leading-[1.08] sm:text-7xl lg:text-[clamp(3.6rem,6.5vw,6.5rem)]">{hero.headline}</h1>
             <p className="mt-5 max-w-xl text-base leading-8 text-[var(--text-secondary)] sm:mt-6 sm:text-xl">{hero.subheadline}</p>
@@ -39,7 +41,7 @@ export default function MarketingPage() {
           </div>
           <div className="hero-spacer hidden lg:block" />
         </div>
-        <div className="container relative z-10 pb-7 lg:pb-10"><div className="stats-strip">{hero.stats.map((stat) => <div key={stat.label} className="stat-item"><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div></div>
+        <div className="container relative z-10 pb-7 lg:pb-10"><div className="stats-strip">{hero.stats.map((stat, index) => <Reveal key={stat.label} delay={index * 90}><div className="stat-item"><strong>{stat.value}</strong><span>{stat.label}</span></div></Reveal>)}</div></div>
         <a href="#method" className="hero-scroll-cue hidden lg:flex" aria-label="اكتشف طريقة التدريب"><span>اكتشف</span><ArrowDownLeft size={16} /></a>
       </section>
 
@@ -52,12 +54,12 @@ export default function MarketingPage() {
         <div className="method-grid mt-12">{method.steps.map((step, index) => <article key={step.number} className={`method-card method-card-${index + 1}`}><div className="flex items-start justify-between"><span className="step-number">{step.number}</span><ArrowLeft size={20} className="text-[var(--accent)]" /></div><h3 className="mt-12 text-2xl font-extrabold">{step.title}</h3><p className="mt-3 leading-7 text-[var(--text-muted)]">{step.text}</p></article>)}</div>
       </div></section>
 
-      <section id="about" className="about-section section-padding"><div className="container grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+      <section id="about" className="about-section section-padding"><Reveal><div className="container grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
         <div className="about-image-wrap"><div className="about-image"><Image src={about.aboutPhotoUrl} alt={about.aboutPhotoAlt} fill sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover object-center" /></div><div className="image-stamp"><span>TRAIN<br />SMART</span></div><div className="about-photo-label">{coach.name}<span>{coach.role}</span></div></div>
         <div className="about-copy"><span className="eyebrow">{about.eyebrow}</span><h2 className="section-title mt-4">{about.title}</h2><p className="mt-6 max-w-xl text-lg leading-8 text-[var(--text-secondary)]">{about.description}</p><ul className="mt-8 space-y-4">{about.credentials.map((item) => <li key={item} className="flex items-center gap-3 font-bold"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--bg-ink)]"><Check size={15} strokeWidth={3} /></span>{item}</li>)}</ul></div>
-      </div></section>
+      </div></Reveal></section>
 
-      <section id="transformations" className="transformation-section section-padding border-y border-[var(--border-hairline)]"><div className="container"><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><span className="eyebrow">{transformations.eyebrow}</span><h2 className="section-title mt-4">{transformations.title}</h2></div><p className="max-w-sm text-[var(--text-muted)] sm:text-left">{transformations.subtitle}</p></div><TransformationsGallery items={transformations.items} /></div></section>
+      <section id="transformations" className="transformation-section section-padding border-y border-[var(--border-hairline)]"><Reveal><div className="container"><div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><span className="eyebrow">{transformations.eyebrow}</span><h2 className="section-title mt-4">{transformations.title}</h2></div><p className="max-w-sm text-[var(--text-muted)] sm:text-left">{transformations.subtitle}</p></div><TransformationsGallery items={transformations.items} /></div></Reveal></section>
 
       <section id="pricing" className="pricing-section section-padding"><div className="container"><div className="pricing-intro mx-auto max-w-2xl text-center"><span className="eyebrow">{pricing.eyebrow}</span><h2 className="section-title mt-4">{pricing.title}</h2><p className="mt-4 text-[var(--text-muted)]">{pricing.subtitle}</p></div><div className="mt-12 grid gap-5 lg:grid-cols-2 lg:mx-auto lg:max-w-4xl">{pricing.plans.map((plan, index) => <Card key={plan.name} className={`pricing-card ${plan.highlighted ? "pricing-card-featured" : ""}`}><CardHeader><div className="pricing-card-topline"><span>0{index + 1} / متابعة</span>{plan.highlighted && <span className="pricing-badge">الأكثر طلبًا</span>}</div><div className="flex items-start justify-between gap-3"><CardTitle className="mt-5 text-2xl font-extrabold text-[var(--text-primary)]">{plan.name}</CardTitle></div><p className="mt-6 text-4xl font-black text-[var(--accent)]">{plan.price}</p><p className="text-sm text-[var(--text-muted)]">{plan.duration}</p></CardHeader><CardContent><ul className="space-y-4 border-t border-[var(--border-hairline)] pt-6 text-sm text-[var(--text-secondary)]">{plan.features.map((feature) => <li key={feature} className="flex gap-3"><Check size={17} className="shrink-0 text-[var(--accent)]" />{feature}</li>)}</ul><a href={whatsappUrl(pricing.whatsappNumber, `${pricing.whatsappMessage} ${plan.name}`)} target="_blank" rel="noreferrer" className="mt-8 block"><Button className={plan.highlighted ? "cta-button w-full" : "secondary-button w-full"}>{plan.ctaText}<WhatsAppIcon size={17} /></Button></a></CardContent></Card>)}</div><p className="mt-8 text-center text-sm text-[var(--text-muted)]">{pricing.note}</p></div></section>
 
