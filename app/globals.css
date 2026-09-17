@@ -80,6 +80,24 @@ input, select, textarea { min-height: 44px; }
   .login-submit { min-height: 52px; width: 100%; margin-top: 1.5rem; padding-inline: 1rem; }
   .login-error { margin-top: 1rem; border: 1px solid rgb(248 113 113 / 28%); border-radius: var(--radius-base); background: rgb(127 29 29 / 18%); padding: .75rem; color: #fca5a5; font-size: .8rem; line-height: 1.7; }
   .login-help { margin-top: 1.25rem; color: var(--text-muted); font-size: .75rem; line-height: 1.7; text-align: center; }
+  @keyframes login-shell-in { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes login-image-in { from { opacity: 0; transform: scale(1.045); } to { opacity: 1; transform: scale(1); } }
+  @keyframes login-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes login-content-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .login-shell { animation: login-shell-in .75s cubic-bezier(.22, 1, .36, 1) both; }
+  .login-visual img { animation: login-image-in 1.1s cubic-bezier(.22, 1, .36, 1) .08s both; }
+  .login-visual-overlay { animation: login-overlay-in .9s ease-out .18s both; }
+  .login-visual-content > *, .login-panel > .login-back, .login-heading > *, .login-form > * { animation: login-content-in .6s cubic-bezier(.22, 1, .36, 1) both; }
+  .login-visual-content > :nth-child(1), .login-heading > :nth-child(1) { animation-delay: .18s; }
+  .login-visual-content > :nth-child(2), .login-heading > :nth-child(2) { animation-delay: .27s; }
+  .login-visual-content > :nth-child(3), .login-heading > :nth-child(3) { animation-delay: .36s; }
+  .login-visual-content > :nth-child(4), .login-heading > :nth-child(4) { animation-delay: .45s; }
+  .login-panel > .login-back { animation-delay: .2s; }
+  .login-form > :nth-child(1) { animation-delay: .48s; }
+  .login-form > :nth-child(2) { animation-delay: .56s; }
+  .login-form > :nth-child(3) { animation-delay: .64s; }
+  .login-form > :nth-child(4) { animation-delay: .72s; }
+  .login-submit:hover { box-shadow: 0 10px 28px rgb(226 253 75 / 14%); }
   .coach-nav-link { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem .7rem; color: var(--text-muted); font-size: .78rem; font-weight: 800; transition: color .2s ease, background .2s ease; }
   .coach-nav-link:hover { background: rgb(226 253 75 / 8%); color: var(--accent); }
   .coach-nav-link-active { background: rgb(226 253 75 / 12%); color: var(--accent); }
@@ -247,6 +265,7 @@ input, select, textarea { min-height: 44px; }
   .landing-reveal-ready:not(.landing-reveal-visible) { opacity: 1; transform: none; transition: none; }
   .landing-scroll-reveal { opacity: 1; transform: none; transition: none; }
   .hero-entrance > *, .hero-photo, .hero-shade { animation: none !important; }
+  .login-shell, .login-visual img, .login-visual-overlay, .login-visual-content > *, .login-panel > .login-back, .login-heading > *, .login-form > * { animation: none !important; opacity: 1; transform: none; }
 }
 
 /* Shared brand bridge for older dashboard utility classes. This keeps legacy
