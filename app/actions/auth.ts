@@ -3,17 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { isValidEgyptianPhone, normalizeEgyptianPhone, phoneAuthEmail } from "@/lib/validation";
 
 export type AuthActionState = { error?: string; success?: string };
 
 export async function signIn(_previousState: AuthActionState, formData: FormData): Promise<AuthActionState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const identifier = String(formData.get("identifier") ?? formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  if (!email || !password) return { error: "من فضلك أدخل البريد الإلكتروني وكلمة المرور." };
+  if (!identifier || !password) return { error: "من فضلك أدخل رقم الهاتف أو البريد الإلكتروني وكلمة المرور." };
 
   try {
     const supabase = await createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const credentials = identifier.includes("@")
+      ? { email: identifier.toLowerCase(), password }
+        : isValidEgyptianPhone(identifier)
+        ? { email: phoneAuthEmail(identifier), password }
+        : null;
+    if (!credentials) return { error: "أدخل رقم هاتف مصري صحيحًا أو بريدًا إلكترونيًا صحيحًا." };
+    const { error } = await supabase.auth.signInWithPassword(credentials);
     if (error) {
       const networkError = error.name === "AuthRetryableFetchError" || error.message.toLowerCase().includes("fetch failed");
       return { error: networkError ? "تعذر الاتصال بخدمة تسجيل الدخول. تحقق من الإنترنت وحاول مرة أخرى." : "بيانات تسجيل الدخول غير صحيحة." };
@@ -53,14 +60,14 @@ async function createClientAccountUnsafe(_previousState: AuthActionState, formDa
   if (coachProfile?.role !== "coach") return { error: "ليست لديك صلاحية إنشاء حسابات عملاء." };
 
   const fullName = String(formData.get("full_name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const phoneInput = String(formData.get("phone") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const phone = String(formData.get("phone") ?? "").trim() || null;
+  const phone = phoneInput ? normalizeEgyptianPhone(phoneInput) : "";
   const goal = String(formData.get("goal") ?? "").trim() || null;
   const leadId = String(formData.get("lead_id") ?? "").trim() || null;
 
-  if (fullName.length < 2 || fullName.length > 120 || !email || password.length < 6) {
-    return { error: "أدخل اسمًا صحيحًا والبريد وكلمة مرور لا تقل عن 6 أحرف." };
+  if (fullName.length < 2 || fullName.length > 120 || !isValidEgyptianPhone(phone) || password.length < 6) {
+    return { error: "أدخل اسمًا صحيحًا ورقم هاتف مصريًا صحيحًا وكلمة مرور لا تقل عن 6 أحرف." };
   }
 
   let admin: ReturnType<typeof createAdminClient>;
@@ -71,7 +78,9 @@ async function createClientAccountUnsafe(_previousState: AuthActionState, formDa
   }
 
   const { data: created, error: authError } = await admin.auth.admin.createUser({
-    email,
+    // The client sees and uses the phone number. The email is an internal
+    // alias so Phone Auth/SMS providers are not required for password login.
+    email: phoneAuthEmail(phone),
     password,
     email_confirm: true,
     user_metadata: { full_name: fullName },

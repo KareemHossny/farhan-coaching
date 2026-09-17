@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, LockKeyhole, Mail } from "lucide-react";
+import { ArrowLeft, LockKeyhole, Phone } from "lucide-react";
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -24,8 +24,8 @@ export function LoginForm() {
 
   return <form action={action} className="login-form" noValidate={false}>
     <label className="login-field-label">
-      <span>البريد الإلكتروني</span>
-      <span className="login-field-control"><Mail size={17} aria-hidden="true" /><input name="email" type="email" required autoComplete="email" dir="ltr" placeholder="name@example.com" /></span>
+      <span>رقم الهاتف أو البريد الإلكتروني</span>
+      <span className="login-field-control"><Phone size={17} aria-hidden="true" /><input name="identifier" type="text" required autoComplete="username" dir="ltr" placeholder="010xxxxxxxx أو coach@example.com" /></span>
     </label>
     <label className="login-field-label">
       <span>كلمة المرور</span>

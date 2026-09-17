@@ -9,6 +9,13 @@ export function isValidEgyptianPhone(value: string): boolean {
   return /^20(10|11|12|15)\d{8}$/.test(normalizeEgyptianPhone(value));
 }
 
+// Supabase Phone Auth can require an SMS provider even when the app only needs
+// password login. Keep the user's phone as the visible identifier while using
+// a private, deterministic email alias for Supabase Auth instead.
+export function phoneAuthEmail(value: string): string {
+  return `client-${normalizeEgyptianPhone(value)}@phone.farhan-coaching.app`;
+}
+
 export function isValidPositiveGrams(value: unknown): value is number {
   const grams = typeof value === "number" ? value : Number(value);
   return Number.isFinite(grams) && grams > 0;

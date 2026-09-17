@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { whatsappUrl } from "@/lib/whatsapp";
 import { extractYoutubeId } from "@/lib/youtube";
-import { canAccessClientStatus, isValidDateRange, isValidEgyptianPhone, isValidPositiveGrams, normalizeEgyptianPhone } from "@/lib/validation";
+import { canAccessClientStatus, isValidDateRange, isValidEgyptianPhone, isValidPositiveGrams, normalizeEgyptianPhone, phoneAuthEmail } from "@/lib/validation";
 
 describe("WhatsApp links", () => {
   it("normalizes an Egyptian mobile number and encodes the message", () => {
@@ -23,6 +23,7 @@ describe("validation", () => {
     expect(normalizeEgyptianPhone("+20 102 872 0683")).toBe("201028720683");
     expect(isValidEgyptianPhone("01028720683")).toBe(true);
     expect(isValidEgyptianPhone("011234")).toBe(false);
+    expect(phoneAuthEmail("01028720683")).toBe("client-201028720683@phone.farhan-coaching.app");
   });
   it("requires positive grams", () => {
     expect(isValidPositiveGrams(150)).toBe(true);
