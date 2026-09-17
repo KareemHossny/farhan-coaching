@@ -14,7 +14,11 @@ type Item = { src: string; alt: string; story?: string };
 export function TransformationsGallery({ items }: { items: readonly Item[] }) {
   const [selected, setSelected] = useState<Item | null>(null);
   const swiperRef = useRef<SwiperInstance | null>(null);
-  const repeatedItems = Array.from({ length: 3 }, () => items).flat();
+  const repeatedItems = Array.from({ length: 5 }, () => items).flat();
+
+  const keepAutoplayRunning = (swiper: SwiperInstance) => {
+    if (!swiper.destroyed && !swiper.autoplay.running) swiper.autoplay.start();
+  };
 
   const selectStory = (item: Item) => {
     setSelected(item);
@@ -50,13 +54,15 @@ export function TransformationsGallery({ items }: { items: readonly Item[] }) {
           modules={[Autoplay]}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
-            swiper.autoplay.start();
+            keepAutoplayRunning(swiper);
           }}
+          onAutoplayStop={keepAutoplayRunning}
+          onReachEnd={keepAutoplayRunning}
           autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: false, stopOnLastSlide: false, waitForTransition: false }}
           speed={750}
           centeredSlides
           loop
-          loopAdditionalSlides={repeatedItems.length}
+          loopAdditionalSlides={items.length * 2}
           loopPreventsSliding={false}
           rewind={false}
           watchOverflow={false}
