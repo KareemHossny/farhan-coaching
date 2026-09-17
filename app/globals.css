@@ -220,6 +220,13 @@ input, select, textarea { min-height: 44px; }
 
 @media (max-width: 767px) {
   .container { width: min(100% - 1.5rem, 1180px); }
+  .cta-button, .secondary-button { max-width: 100%; white-space: normal; text-align: center; }
+  .panel, .login-shell, .transformation-modal, .client-plan-item { min-width: 0; }
+  .login-shell { min-height: auto; }
+  .login-panel { padding: 1.15rem; }
+  .login-heading { margin-top: 1.25rem; }
+  .login-heading h1 { font-size: clamp(1.8rem, 9vw, 2.55rem); }
+  .login-form { margin-top: 1.5rem; }
   .site-header .container { min-height: 64px; height: 64px; }
   .site-header .container > a img { height: 2.5rem; }
   .section-title { font-size: clamp(1.85rem, 9vw, 2.7rem); }
@@ -252,12 +259,29 @@ input, select, textarea { min-height: 44px; }
   .transformations-carousel .swiper-slide-active .transformation-card { transform: scale(1.015); }
   .carousel-arrow { height: 38px; width: 38px; }
   .transformation-modal { max-height: calc(100svh - 1rem); }
+  .transformation-modal > div { min-width: 0; }
   .hero-copy > div > a,
   #pricing .pricing-card a,
   #contact a { width: 100%; }
   nav[aria-label="تنقل لوحة المدرب"] { width: 100%; }
   .coach-nav-link { flex: 1 1 calc(50% - .25rem); justify-content: center; min-height: 44px; }
   .coach-header .coach-nav-link { flex: 0 0 auto; }
+}
+
+@media (max-width: 380px) {
+  .container { width: calc(100% - 1rem); }
+  .site-header .container { padding-inline: .25rem; }
+  .site-header .container > a img { height: 2.25rem; }
+  .hero-copy { padding-top: 12rem; }
+  .hero-copy h1 { font-size: clamp(2.35rem, 13vw, 3rem); }
+  .hero-copy p { font-size: .9rem; line-height: 1.9; }
+  .stats-strip { gap: .25rem; }
+  .stat-item, .stat-item + .stat-item { margin-right: 0; padding-right: .35rem; }
+  .stat-item strong { font-size: 1.05rem; }
+  .stat-item span { font-size: .58rem; }
+  .transformations-carousel { padding-inline: 1.9rem; }
+  .carousel-arrow { height: 34px; width: 34px; }
+  .login-panel { padding: 1rem .85rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
