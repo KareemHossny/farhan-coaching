@@ -21,7 +21,7 @@ export default function MarketingPage() {
       <header className="site-header"><div className="container flex h-[72px] items-center justify-between">
         <a href="#home" aria-label={coach.name} className="shrink-0"><Image src={nav.logo.url} alt={nav.logo.alt} width={150} height={52} className="h-11 w-auto object-contain" priority /></a>
         <nav className="hidden items-center gap-8 md:flex" aria-label="التنقل الرئيسي">{nav.links.map((link) => <a key={link.href} href={link.href} className="nav-link">{link.label}</a>)}</nav>
-        <a href={whatsappUrl(nav.whatsappNumber, nav.ctaMessage)} target="_blank" rel="noreferrer" className="hidden md:block"><Button className="cta-button h-10 px-5">{nav.ctaText}<ArrowLeft size={16} /></Button></a>
+        <a href="/login" className="secondary-button hidden min-h-10 items-center justify-center rounded-sm px-4 text-sm font-bold md:inline-flex">تسجيل الدخول</a><a href={whatsappUrl(nav.whatsappNumber, nav.ctaMessage)} target="_blank" rel="noreferrer" className="hidden md:block"><Button className="cta-button h-10 px-5">{nav.ctaText}<ArrowLeft size={16} /></Button></a>
         <MobileNav links={nav.links} ctaText={nav.ctaText} whatsappNumber={nav.whatsappNumber} ctaMessage={nav.ctaMessage} />
       </div></header>
 
