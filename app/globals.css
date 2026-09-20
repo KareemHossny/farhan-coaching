@@ -184,14 +184,9 @@ input, select, textarea { min-height: 44px; }
   .pricing-card-topline { display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); font-size: .68rem; font-weight: 900; letter-spacing: .08em; }
   .pricing-badge { background: var(--accent); color: var(--bg-ink); padding: .35rem .55rem; font-size: .62rem; letter-spacing: 0; }
   .pricing-checkin { border-right: 2px solid var(--accent); padding: .7rem .8rem; background: rgb(226 253 75 / 6%); }
-  .pricing-checkin span, .pricing-difference span { display: block; color: var(--text-muted); font-size: .7rem; font-weight: 800; }
+  .pricing-checkin span { display: block; color: var(--text-muted); font-size: .7rem; font-weight: 800; }
   .pricing-checkin strong { display: block; margin-top: .25rem; color: var(--accent); font-size: 1.05rem; font-weight: 900; }
   .pricing-checkin p { margin-top: .2rem; color: var(--text-secondary); font-size: .75rem; line-height: 1.7; }
-  .pricing-difference { border: 1px solid var(--border-hairline); padding: 1rem; background: rgb(255 255 255 / 2%); }
-  .pricing-difference .eyebrow { font-size: .68rem; }
-  .pricing-difference > div > div { border-right: 2px solid var(--border-hairline); padding: .35rem .7rem; }
-  .pricing-difference > div > div:last-child { border-right-color: var(--accent); }
-  .pricing-difference strong { display: block; margin-top: .25rem; color: var(--text-primary); font-size: .9rem; }
   .faq-section { background-image: radial-gradient(circle at 15% 20%, rgb(226 253 75 / 5%), transparent 28%); }
   .faq-section details { transition: background .2s ease; }
   .faq-section details[open] { background: rgb(226 253 75 / 3%); }
