@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 type PlanItemInput = {
   libraryItemId?: string;
   mealLabel?: string;
+  alternativeGroup?: string;
   overrideGrams?: string;
   dayOfWeek: number;
   orderIndex: number;
@@ -62,8 +63,9 @@ function preparePlan(plan: PlanInput, type: "workout" | "diet") {
       return {
         library_item_id: item.libraryItemId || null,
         meal_label: item.mealLabel.trim().slice(0, 80),
+        alternative_group: item.alternativeGroup?.trim().slice(0, 100) || null,
         override_grams: grams,
-        day_of_week: item.dayOfWeek,
+        day_of_week: 0,
         order_index: index,
         name: item.name.trim().slice(0, 160),
         override_sets: null,

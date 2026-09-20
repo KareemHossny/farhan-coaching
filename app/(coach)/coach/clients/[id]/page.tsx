@@ -8,7 +8,7 @@ import { ExercisePerformanceHistory } from "@/components/coach/ExercisePerforman
 import { createProgressPhotoUrl } from "@/lib/progress-photos";
 
 type Params = Promise<{ id: string }>;
-type PlanItemRow = { id: string; plan_id: string; day_of_week: number; order_index: number; library_item_id: string | null; meal_label: string | null; override_grams: number | null; name: string | null; details: Record<string, unknown> | null; override_sets: number | null; override_reps: string | null; override_calories: number | null };
+type PlanItemRow = { id: string; plan_id: string; day_of_week: number; order_index: number; library_item_id: string | null; meal_label: string | null; alternative_group: string | null; override_grams: number | null; name: string | null; details: Record<string, unknown> | null; override_sets: number | null; override_reps: string | null; override_calories: number | null };
 type PlanRow = { id: string; type: "workout" | "diet"; title: string; start_date: string | null; end_date: string | null };
 
 function asNumber(value: unknown): string { return typeof value === "number" ? String(value) : ""; }
@@ -20,6 +20,7 @@ function toItems(items: PlanItemRow[]): BuilderItem[] {
     name: item.name ?? "",
     libraryItemId: item.library_item_id ?? undefined,
     mealLabel: item.meal_label ?? "الإفطار",
+    alternativeGroup: item.alternative_group ?? undefined,
     overrideGrams: asNumber(item.override_grams),
     sets: item.override_sets !== null ? String(item.override_sets) : asNumber(item.details?.sets),
     reps: item.override_reps ?? (typeof item.details?.reps === "string" ? item.details.reps : ""),
@@ -52,7 +53,7 @@ export default async function ClientPlanPage({ params }: { params: Params }) {
   const planRows = (plans ?? []) as PlanRow[];
   const planIds = planRows.map((plan) => plan.id);
   const { data: planItems, error: itemsError } = planIds.length
-    ? await supabase.from("plan_items").select("id, plan_id, day_of_week, order_index, library_item_id, meal_label, override_grams, name, details, override_sets, override_reps, override_calories").in("plan_id", planIds).order("order_index")
+    ? await supabase.from("plan_items").select("id, plan_id, day_of_week, order_index, library_item_id, meal_label, alternative_group, override_grams, name, details, override_sets, override_reps, override_calories").in("plan_id", planIds).order("order_index")
     : { data: [], error: null };
   if (itemsError) throw new Error("تعذر تحميل عناصر الخطط.");
 
