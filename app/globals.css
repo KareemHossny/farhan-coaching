@@ -183,10 +183,12 @@ input, select, textarea { min-height: 44px; }
   .pricing-card-featured { background: linear-gradient(145deg, rgb(226 253 75 / 9%), var(--surface) 38%); }
   .pricing-card-topline { display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); font-size: .68rem; font-weight: 900; letter-spacing: .08em; }
   .pricing-badge { background: var(--accent); color: var(--bg-ink); padding: .35rem .55rem; font-size: .62rem; letter-spacing: 0; }
-  .pricing-checkin { border-right: 2px solid var(--accent); padding: .7rem .8rem; background: rgb(226 253 75 / 6%); }
+  .pricing-checkin { border-right: 2px solid var(--border-hairline); padding: .8rem; background: rgb(255 255 255 / 3%); }
   .pricing-checkin span { display: block; color: var(--text-muted); font-size: .7rem; font-weight: 800; }
-  .pricing-checkin strong { display: block; margin-top: .25rem; color: var(--accent); font-size: 1.05rem; font-weight: 900; }
+  .pricing-checkin strong { display: block; margin-top: .25rem; color: var(--text-primary); font-size: 1.05rem; font-weight: 900; }
   .pricing-checkin p { margin-top: .2rem; color: var(--text-secondary); font-size: .75rem; line-height: 1.7; }
+  .pricing-followup-featured + .pricing-checkin { border-right-color: var(--accent); background: rgb(226 253 75 / 9%); }
+  .pricing-followup-featured + .pricing-checkin strong { color: var(--accent); }
   .pricing-followup { border-right: 2px solid var(--border-hairline); padding: .8rem; background: rgb(255 255 255 / 3%); }
   .pricing-followup-featured { border-right-color: var(--accent); background: rgb(226 253 75 / 9%); }
   .pricing-followup span { display: block; color: var(--text-muted); font-size: .7rem; font-weight: 800; }
