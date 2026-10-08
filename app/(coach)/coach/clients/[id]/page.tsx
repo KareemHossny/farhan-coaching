@@ -25,6 +25,7 @@ function toItems(items: PlanItemRow[]): BuilderItem[] {
     sets: item.override_sets !== null ? String(item.override_sets) : asNumber(item.details?.sets),
     reps: item.override_reps ?? (typeof item.details?.reps === "string" ? item.details.reps : ""),
     restSeconds: asNumber(item.details?.rest_seconds),
+    note: typeof item.details?.note === "string" ? item.details.note : "",
     calories: item.override_calories !== null ? String(item.override_calories) : "",
     proteinG: asNumber(item.details?.protein_g),
     carbsG: asNumber(item.details?.carbs_g),

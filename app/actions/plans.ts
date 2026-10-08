@@ -14,6 +14,7 @@ type PlanItemInput = {
   sets?: string;
   reps?: string;
   restSeconds?: string;
+  note?: string;
   calories?: string;
 };
 
@@ -85,7 +86,10 @@ function preparePlan(plan: PlanInput, type: "workout" | "diet") {
       override_sets: integerOrNull(item.sets, 1),
       override_reps: item.reps?.trim().slice(0, 40) || null,
       override_calories: null,
-      details: { rest_seconds: integerOrNull(item.restSeconds, 0) },
+      details: {
+        rest_seconds: integerOrNull(item.restSeconds, 0),
+        note: item.note?.trim().slice(0, 500) || null,
+      },
     };
   });
 

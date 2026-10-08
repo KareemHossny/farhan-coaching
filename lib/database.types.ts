@@ -68,7 +68,7 @@ export type Database = {
     Functions: {
       create_client_record: { Args: { p_client_id: string; p_coach_id: string; p_full_name: string; p_phone: string | null; p_goal: string | null }; Returns: undefined };
       get_client_account: { Args: Record<string, never>; Returns: Array<{ id: string; status: "active" | "paused" | "pending"; full_name: string; progress_enabled: boolean }> };
-      get_client_plan_items: { Args: Record<string, never>; Returns: Array<{ plan_id: string; client_id: string; plan_type: "workout" | "diet"; plan_title: string; start_date: string | null; end_date: string | null; item_id: string; day_of_week: number; order_index: number; library_item_id: string | null; meal_label: string | null; alternative_group: string | null; item_name: string | null; grams: number | null; sets: number | null; reps: string | null; rest_seconds: number | null; youtube_url: string | null }> };
+      get_client_plan_items: { Args: Record<string, never>; Returns: Array<{ plan_id: string; client_id: string; plan_type: "workout" | "diet"; plan_title: string; start_date: string | null; end_date: string | null; item_id: string; day_of_week: number; order_index: number; library_item_id: string | null; meal_label: string | null; alternative_group: string | null; item_name: string | null; grams: number | null; sets: number | null; reps: string | null; rest_seconds: number | null; exercise_note: string | null; youtube_url: string | null }> };
       save_client_plans: { Args: { p_client_id: string; p_workout: Json; p_diet: Json }; Returns: undefined };
     };
     Enums: { user_role: "coach" | "client"; client_status: "active" | "paused" | "pending"; plan_type: "workout" | "diet" };

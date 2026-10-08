@@ -11,13 +11,13 @@ export type ClientPlanItem = {
   start_date: string | null; end_date: string | null; item_id: string; day_of_week: number;
   order_index: number; library_item_id: string | null; meal_label: string | null;
   alternative_group: string | null; item_name: string | null; grams: number | null; sets: number | null; reps: string | null;
-  rest_seconds: number | null; youtube_url: string | null;
+  rest_seconds: number | null; exercise_note: string | null; youtube_url: string | null;
 };
 
 export type ClientPlan = { id: string; type: "workout" | "diet"; title: string; plan_items: ClientPlanItem[] };
 
 function WorkoutItem({ item }: { item: ClientPlanItem }) {
-  return <div className="client-plan-item"><div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgb(226,253,75,0.1)] text-[var(--accent)]"><Dumbbell size={17} /></span><div className="min-w-0"><p className="break-words font-extrabold">{item.item_name ?? "تمرين في الخطة"}</p><p className="mt-1 text-sm text-[var(--text-muted)]">{item.sets ?? "—"} مجموعات · {item.reps ?? "—"} تكرارات · راحة {item.rest_seconds ?? "—"} ثانية</p></div></div>{item.youtube_url && <details className="mt-3 border-t border-[var(--border-hairline)] pt-3"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-bold text-[var(--accent)]">مشاهدة فيديو التمرين <ChevronDown size={16} /></summary><div className="mt-2"><YoutubeEmbed youtubeUrl={item.youtube_url} /></div></details>}</div>;
+  return <div className="client-plan-item"><div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgb(226,253,75,0.1)] text-[var(--accent)]"><Dumbbell size={17} /></span><div className="min-w-0"><p className="break-words font-extrabold">{item.item_name ?? "تمرين في الخطة"}</p><p className="mt-1 text-sm text-[var(--text-muted)]">{item.sets ?? "—"} مجموعات · {item.reps ?? "—"} تكرارات · راحة {item.rest_seconds ?? "—"} ثانية</p>{item.exercise_note && <p className="mt-2 rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3 py-2 text-sm leading-6 text-[var(--text-muted)]"><span className="font-bold text-[var(--accent)]">ملاحظة الكابتن: </span>{item.exercise_note}</p>}</div></div>{item.youtube_url && <details className="mt-3 border-t border-[var(--border-hairline)] pt-3"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-sm font-bold text-[var(--accent)]">مشاهدة فيديو التمرين <ChevronDown size={16} /></summary><div className="mt-2"><YoutubeEmbed youtubeUrl={item.youtube_url} /></div></details>}</div>;
 }
 
 function DietGroup({ items }: { items: ClientPlanItem[] }) {
